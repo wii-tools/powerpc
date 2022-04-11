@@ -9,18 +9,18 @@ example := PatchSet{
 	Name: "Nullify access check",
 	// The offset of the function in the binary - i.e. the DOL.
 	AtOffset: 57236,
-	
+
 	// Instructions present previously.
 	// In this example, we have a generic function prolog.
-    Before: Instructions{
-        STWU(R1, R1, 0xFC10),
-    }.Bytes(),
+	Before: Instructions{
+		STWU(R1, R1, 0xFC10),
+	}.Bytes(),
 	// Instructions present afterwards.
 	// They must match the same length as what they are replacing.
 	// In this example, we immediately return.
-    After: Instructions{
-        BLR(),
-    }.Bytes(),
+	After: Instructions{
+		BLR(),
+	}.Bytes(),
 }
 patched, err := ApplyPatch(example, binary)
 ```
@@ -30,17 +30,17 @@ Consider the following scenario:
 ```go
 example := PatchSet{
 	Name: "Change domains",
-	
+
 	Patches: []Patch{
 		Patch{
-            Name: "Remove domain whitelist",
-			// [...]
+			Name: "Remove domain whitelist",
+				// [...]
+			},
+			Patch{
+				Name: "Use custom domain",
+				// [...]
+			},
 		},
-		Patch{
-		    Name: "Use custom domain",
-			// [...]
-        },
-    },
 }
 patched, err := ApplyPatchSet(example, binary)
 ```
