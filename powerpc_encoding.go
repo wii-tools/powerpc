@@ -72,6 +72,46 @@ func (b Bits) getByte() byte {
 	return result
 }
 
+// EncodeInstrBForm handles encoding a given opcode, BO, BI, BD, AA and LK.
+// I-form assumes:
+//   - 6 bits for the opcode
+//   - 5 bits for BO
+//   - 5 bits for BI
+//   - 24 bits for BD
+//   - 1 bit for absolute (AA)
+//   - 1 bit for should store in link register (LK)
+func EncodeInstrBForm(opcode byte, BO Register, BI Register, BD [3]byte, AA bool, LK bool) Instruction {
+	opBits := getBits(opcode)
+	bOBits := getBits(byte(BO))
+	bIBits := getBits(byte(BI))
+	bDTwo := getBits(BD[1])
+	bDThree := getBits(BD[2])
+
+	instr := [4]Bits{
+		{
+			// We need the upper six bits for our opcode.
+			opBits[2], opBits[3], opBits[4], opBits[5], opBits[6], opBits[7],
+
+			// We need the upper five bits for BO and BI.
+			bOBits[3], bOBits[4],
+		},
+		{
+			bOBits[5], bOBits[6], bOBits[7], bIBits[3], bIBits[4], bIBits[5], bIBits[6], bIBits[7],
+		},
+		{
+			// We need the upper 14 bits for the destination branch (BD).
+			bDTwo[2], bDTwo[3], bDTwo[4], bDTwo[5], bDTwo[6], bDTwo[7], bDThree[0], bDThree[1],
+		},
+		{
+			bDThree[2], bDThree[3], bDThree[4], bDThree[5], bDThree[6], bDThree[7],
+			AA,
+			LK,
+		},
+	}
+
+	return Instruction{instr[0].getByte(), instr[1].getByte(), instr[2].getByte(), instr[3].getByte()}
+}
+
 // EncodeInstrDForm handles encoding a given opcode, RT, RA and SI.
 // D-form assumes:
 //  - 6 bits for the opcode

@@ -167,3 +167,10 @@ func BL(current uint, target uint) Instruction {
 func B(current uint, target uint) Instruction {
 	return EncodeInstrIForm(18, calcDestination(current, target), false, false)
 }
+
+// BNE represents the bne PowerPC instruction.
+// It calculates the offset from the given current address
+// and the given target address, and then branches.
+func BNE(current uint, target uint) Instruction {
+	return EncodeInstrBForm(16, 4, 2, calcDestination(current, target), false, false)
+}
