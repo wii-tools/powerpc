@@ -152,6 +152,46 @@ func EncodeInstrIForm(opcode byte, LI [3]byte, AA bool, LK bool) Instruction {
 	return Instruction{instr[0].getByte(), instr[1].getByte(), instr[2].getByte(), instr[3].getByte()}
 }
 
+// EncodeInstrXForm handles encoding a given opcode, rS, rA, rB, an extended opcode and rC.
+// X-form assumes:
+//   - 6 bits for the opcode
+//   - 5 bits for rS
+//   - 5 bits for rA
+//   - 5 bits for rB
+//   - 10 bits for XO (extended opcode)
+//   - 1 bit for rC (dependent on the condition register)
+func EncodeInstrXForm(opcode byte, rS Register, rA Register, rB Register, XO uint16, rC bool) Instruction {
+	opBits := getBits(opcode)
+	rSBits := getBits(byte(rS))
+	rABits := getBits(byte(rA))
+	rBBits := getBits(byte(rB))
+
+	extendedOP1 := getBits(twoByte(XO)[0])
+	extendedOP2 := getBits(twoByte(XO)[1])
+
+	instr := [4]Bits{
+		{
+			// We need the upper six bits for our opcode.
+			opBits[2], opBits[3], opBits[4], opBits[5], opBits[6], opBits[7],
+
+			// We need the upper five bits for rS, rA and rB.
+			rSBits[3], rSBits[4],
+		},
+		{
+			rSBits[5], rSBits[6], rSBits[7], rABits[3], rABits[4], rABits[5], rABits[6], rABits[7],
+		},
+		{
+			// We need the upper 10 bits for the extended opcode.
+			rBBits[3], rBBits[4], rBBits[5], rBBits[6], rBBits[7], extendedOP1[6], extendedOP1[7], extendedOP2[0],
+		},
+		{
+			extendedOP2[1], extendedOP2[2], extendedOP2[3], extendedOP2[4], extendedOP2[5], extendedOP2[6], extendedOP2[7], rC,
+		},
+	}
+
+	return Instruction{instr[0].getByte(), instr[1].getByte(), instr[2].getByte(), instr[3].getByte()}
+}
+
 // twoByte converts an uint16 to two big-endian bytes.
 func twoByte(passed uint16) [2]byte {
 	result := make([]byte, 2)

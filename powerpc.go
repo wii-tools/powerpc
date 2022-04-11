@@ -79,6 +79,11 @@ func LIS(rT Register, value uint16) Instruction {
 	return ADDIS(rT, 0, value)
 }
 
+// OR represents the or PowerPC instruction.
+func OR(rS Register, rA Register, rB Register, rC bool) Instruction {
+	return EncodeInstrXForm(31, rS, rA, rB, 444, rC)
+}
+
 // ORI represents the ori PowerPC instruction.
 func ORI(rS Register, rA Register, value uint16) Instruction {
 	return EncodeInstrDForm(24, rS, rA, value)
