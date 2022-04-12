@@ -7,6 +7,9 @@ import (
 // Register represents a value for a PowerPC register.
 type Register byte
 
+// SpecialRegister represents a value for a PowerPC register/
+type SpecialRegister byte
+
 const (
 	R0 = iota
 	R1
@@ -40,6 +43,12 @@ const (
 	R29
 	R30
 	R31
+)
+
+const (
+	XER SpecialRegister = 1
+	LR  SpecialRegister = 8
+	CTR SpecialRegister = 9
 )
 
 // Bits represents bits for a byte.
@@ -223,6 +232,46 @@ func EncodeInstrXForm(opcode byte, rS Register, rA Register, rB Register, XO uin
 		{
 			// We need the upper 10 bits for the extended opcode.
 			rBBits[3], rBBits[4], rBBits[5], rBBits[6], rBBits[7], extendedOP1[6], extendedOP1[7], extendedOP2[0],
+		},
+		{
+			extendedOP2[1], extendedOP2[2], extendedOP2[3], extendedOP2[4], extendedOP2[5], extendedOP2[6], extendedOP2[7], rC,
+		},
+	}
+
+	return Instruction{instr[0].getByte(), instr[1].getByte(), instr[2].getByte(), instr[3].getByte()}
+}
+
+// EncodeInstrXFXForm handles encoding a given opcode, rS, spr, an extended opcode and rC.
+// XFX-form assumes:
+//   - 6 bits for the opcode
+//   - 5 bits for rS
+//   - 10 bits for spr (special-purpose register)
+//   - 10 bits for XO (extended opcode)
+//   - 1 bit for rC (dependent on the condition register)
+func EncodeInstrXFXForm(opcode byte, rS Register, spr SpecialRegister, XO uint16, rC bool) Instruction {
+	opBits := getBits(opcode)
+	rSBits := getBits(byte(rS))
+	sprBytes := twoByte(uint16(spr))
+	sprBitsOne := getBits(sprBytes[0])
+	sprBitsTwo := getBits(sprBytes[1])
+
+	extendedOP1 := getBits(twoByte(XO)[0])
+	extendedOP2 := getBits(twoByte(XO)[1])
+
+	instr := [4]Bits{
+		{
+			// We need the upper six bits for our opcode.
+			opBits[2], opBits[3], opBits[4], opBits[5], opBits[6], opBits[7],
+
+			// We need the upper five bits for rS.
+			rSBits[3], rSBits[4],
+		},
+		{
+			// We need the upper 10 bits for the spr and extended opcode.
+			rSBits[5], rSBits[6], rSBits[7], sprBitsTwo[3], sprBitsTwo[4], sprBitsTwo[5], sprBitsTwo[6], sprBitsTwo[7],
+		},
+		{
+			sprBitsOne[3], sprBitsOne[4], sprBitsOne[5], sprBitsOne[6], sprBitsOne[7], extendedOP1[6], extendedOP1[7], extendedOP2[0],
 		},
 		{
 			extendedOP2[1], extendedOP2[2], extendedOP2[3], extendedOP2[4], extendedOP2[5], extendedOP2[6], extendedOP2[7], rC,

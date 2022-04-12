@@ -126,16 +126,14 @@ func SYNC() Instruction {
 	return [4]byte{0x7c, 0x00, 0x04, 0xac}
 }
 
-// MTSPR is a hack, hardcoding LR, r0.
-// TODO(spotlightishere): actually encode this
-func MTSPR() Instruction {
-	return [4]byte{0x7c, 0x08, 0x03, 0xa6}
+// MTSPR represents the mtspr PowerPC instruction.
+func MTSPR(spr SpecialRegister, rS Register) Instruction {
+	return EncodeInstrXFXForm(31, rS, spr, 467, false)
 }
 
-// MFSPR is a hack, hardcoding r0, LR.
-// TODO(spotlightishere): actually encode this
-func MFSPR() Instruction {
-	return [4]byte{0x7c, 0x08, 0x02, 0xa6}
+// MFSPR represents the mfspr PowerPC instruction.
+func MFSPR(rS Register, spr SpecialRegister) Instruction {
+	return EncodeInstrXFXForm(31, rS, spr, 339, false)
 }
 
 // STWU represents the stwu PowerPC instruction.
