@@ -7,9 +7,6 @@ import (
 // Register represents a value for a PowerPC register.
 type Register byte
 
-// SpecialRegister represents a value for a PowerPC register/
-type SpecialRegister byte
-
 const (
 	R0 = iota
 	R1
@@ -44,6 +41,9 @@ const (
 	R30
 	R31
 )
+
+// SpecialRegister represents a value for a PowerPC register.
+type SpecialRegister byte
 
 const (
 	XER SpecialRegister = 1

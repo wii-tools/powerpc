@@ -96,7 +96,7 @@ func STH(rS Register, offset uint16, rA Register) Instruction {
 
 // EIEIO represents the eieio PowerPC instruction.
 func EIEIO() Instruction {
-	return [4]byte{0x7C, 0x00, 0x06, 0xAC}
+	return EncodeInstrXForm(31, 0, 0, 0, 854, false)
 }
 
 // STW represents the stw PowerPC instruction.
@@ -120,10 +120,9 @@ func CMPWI(rA Register, value uint16) Instruction {
 	return EncodeInstrDForm(11, 0, rA, value)
 }
 
-// SYNC is a hack, hardcoding sync 0.
-// TODO(spotlightishere): actually encode this
+// SYNC represents the sync PowerPC instruction.
 func SYNC() Instruction {
-	return [4]byte{0x7c, 0x00, 0x04, 0xac}
+	return EncodeInstrXForm(31, 0, 0, 0, 598, false)
 }
 
 // MTSPR represents the mtspr PowerPC instruction.
