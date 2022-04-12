@@ -1,6 +1,8 @@
 package powerpc
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+)
 
 // fourByte returns 4 bytes, suitable for the given length.
 func fourByte(value uint32) []byte {
@@ -143,8 +145,11 @@ func STWU(rS Register, rA Register, offset uint16) Instruction {
 // calcDestination determines the proper offset from a given
 // calling address and target address.
 func calcDestination(from uint, target uint) [3]byte {
-	// TODO(spotlightishere): Handle negative offsets properly
 	offset := target - from
+
+	if offset > 0x00FFFFFF {
+		offset = 0x10001 - (uint(int(from) - int(target)))
+	}
 
 	// Sign-extend by two bytes
 	calc := uint32(offset >> 2)

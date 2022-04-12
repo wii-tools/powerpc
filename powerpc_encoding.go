@@ -46,8 +46,11 @@ const (
 type SpecialRegister byte
 
 const (
+	// XER represents the integer exception register.
 	XER SpecialRegister = 1
-	LR  SpecialRegister = 8
+	// LR represents the link register.
+	LR SpecialRegister = 8
+	// CTR represents the count register.
 	CTR SpecialRegister = 9
 )
 
