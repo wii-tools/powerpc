@@ -50,6 +50,7 @@ func BLR() Instruction {
 }
 
 // CRXOR represents a common use of CRXOR on PowerPC.
+// It is equivalent to crxor 4*cr1+eq,4*cr1+eq,4*cr1+eq.
 // TODO: actually implement
 func CRXOR() Instruction {
 	return [4]byte{0x4c, 0xc6, 0x31, 0x82}
@@ -104,6 +105,11 @@ func EIEIO() Instruction {
 // STW represents the stw PowerPC instruction.
 func STW(rS Register, offset uint16, rA Register) Instruction {
 	return EncodeInstrDForm(36, rS, rA, offset)
+}
+
+// STB represents the stb PowerPC instruction.
+func STB(rS Register, offset uint16, rA Register) Instruction {
+	return EncodeInstrDForm(38, rS, rA, offset)
 }
 
 // LWZ represents the lwz PowerPC instruction.
