@@ -97,6 +97,19 @@ func ApplyPatchSet(set PatchSet, binary []byte) ([]byte, error) {
 	return binary, err
 }
 
+// ApplyPatchSets applies an array of patch sets.
+func ApplyPatchSets(sets []PatchSet, binary []byte) ([]byte, error) {
+	var err error
+	for _, patch := range sets {
+		binary, err = ApplyPatchSet(patch, binary)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return binary, nil
+}
+
 // EmptyBytes returns an empty byte array of the given length.
 // It is useful when creating a patch with an original value of none.
 func EmptyBytes(length int) []byte {
