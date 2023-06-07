@@ -4,7 +4,7 @@ This allows simple reproduction of patches to a channel - perhaps ones downloade
 
 Consider this example of a patch:
 ```go
-example := PatchSet{
+example := Patch{
 	// A name describing this patch.
 	Name: "Nullify access check",
 	// The offset of the function in the binary - i.e. the DOL.
